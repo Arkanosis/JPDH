@@ -1,0 +1,7 @@
+Name: com/arkanosis/jpdh
+Specification-Title: Windows Performance Data Helper for Java
+Specification-Version: 1.0
+Specification-Vendor: Jérémie Roquet
+Implementation-Title: com.arkanosis.jpdh
+Implementation-Version: 1.0
+Implementation-Vendor: Jérémie Roquet

@@ -1,0 +1,9 @@
+*.bak
+*.class
+*.dll
+*.exp
+*.jar
+*.lib
+*.out
+hs_err_pid*.log
+jpdh.h
