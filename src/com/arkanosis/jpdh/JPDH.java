@@ -14,11 +14,17 @@ public class JPDH {
         }
     }
 
-    public static native Query openQuery(String dataSource) throws JPDHException;
+    public static Query openQuery(String dataSource) throws JPDHException {
+        Query query = nOpenQuery(dataSource);
+        query.dataSource = dataSource;
+        return query;
+    }
 
     public static Query openQuery() throws JPDHException {
         return openQuery(null);
     }
+
+    private static native Query nOpenQuery(String dataSource) throws JPDHException;
 
     private static void loadLibrary(String name) throws IOException {
         File library = File.createTempFile(name, ".dll");

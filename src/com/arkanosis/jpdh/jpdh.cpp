@@ -71,7 +71,7 @@ namespace {
 
 } // namespace
 
-::jobject Java_com_arkanosis_jpdh_JPDH_openQuery(::JNIEnv* env, ::jclass, ::jstring dataSource_) {
+::jobject Java_com_arkanosis_jpdh_JPDH_nOpenQuery(::JNIEnv* env, ::jclass, ::jstring dataSource_) {
   JNIString dataSource(env, dataSource_);
   ::PDH_HQUERY query;
   ::PDH_STATUS status = ::PdhOpenQuery(dataSource, 0, &query);
@@ -82,10 +82,10 @@ namespace {
   return newObject(env, "com/arkanosis/jpdh/Query", query);
 }
 
-::jobject Java_com_arkanosis_jpdh_Query_addCounter(::JNIEnv* env, ::jobject query_, ::jstring fullCounterPath_) {
-  JNIString fullCounterPath(env, fullCounterPath_);
+::jobject Java_com_arkanosis_jpdh_Query_nAddCounter(::JNIEnv* env, ::jobject query_, ::jstring fullPath_) {
+  JNIString fullPath(env, fullPath_);
   ::PDH_HCOUNTER counter;
-  ::PDH_STATUS status = ::PdhAddCounter(getObject<::PDH_HQUERY>(env, query_), fullCounterPath, 0, &counter);
+  ::PDH_STATUS status = ::PdhAddCounter(getObject<::PDH_HQUERY>(env, query_), fullPath, 0, &counter);
   if (status != ERROR_SUCCESS) {
     throwException(env, status);
     return 0;
