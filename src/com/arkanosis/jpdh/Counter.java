@@ -7,8 +7,6 @@ public class Counter {
 
     public native long getLongValue() throws JPDHException;
 
-    public native void remove() throws JPDHException;
-
     public String getFullPath() {
         return fullPath;
     }

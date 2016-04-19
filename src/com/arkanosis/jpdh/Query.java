@@ -1,11 +1,14 @@
 package com.arkanosis.jpdh;
 
 public class Query implements AutoCloseable {
+
     public Counter addCounter(String fullPath) throws JPDHException {
         Counter counter = nAddCounter(fullPath);
         counter.fullPath = fullPath;
         return counter;
     }
+
+    public native void removeCounter(Counter counter) throws JPDHException;
 
     public native void collectData() throws JPDHException;
 

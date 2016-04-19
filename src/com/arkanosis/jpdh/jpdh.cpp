@@ -3,6 +3,10 @@
 #include <PdhMsg.h>
 
 #include "com/arkanosis/jpdh/jpdh.h"
+#include "com/arkanosis/jpdh/utils.hpp"
+#include "com/arkanosis/jpdh/Counter.hpp"
+#include "com/arkanosis/jpdh/PIDParser.hpp"
+#include "com/arkanosis/jpdh/Query.hpp"
 
 namespace {
 
@@ -50,25 +54,6 @@ namespace {
     return reinterpret_cast<T>(env->GetLongField(object_, nativeRefField));
   }
 
-  void throwException(::JNIEnv* env, ::PDH_STATUS status) {
-    HMODULE handle = ::GetModuleHandle("Pdh.Dll");
-    if (handle) {
-      char* message;
-      ::FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
-                      FORMAT_MESSAGE_FROM_HMODULE,
-                      handle,
-                      status,
-                      0,
-                      reinterpret_cast<LPTSTR>(&message),
-                      0,
-                      nullptr);
-      env->ThrowNew(env->FindClass("com/arkanosis/jpdh/JPDHException"), message);
-      ::LocalFree(message);
-    } else {
-      env->ThrowNew(env->FindClass("com/arkanosis/jpdh/JPDHException"), "Unable to get Pdh.Dll module handle");
-    }
-  }
-
 } // namespace
 
 ::jobject Java_com_arkanosis_jpdh_JPDH_nOpenQuery(::JNIEnv* env, ::jclass, ::jstring dataSource_) {
@@ -76,82 +61,136 @@ namespace {
   ::PDH_HQUERY query;
   ::PDH_STATUS status = ::PdhOpenQuery(dataSource, 0, &query);
   if (status != ERROR_SUCCESS) {
-    throwException(env, status);
+    jpdh::throwException(env, status);
     return 0;
   }
-  return newObject(env, "com/arkanosis/jpdh/Query", query);
+  return newObject(env, "com/arkanosis/jpdh/Query", new jpdh::Query(dataSource, query));
 }
 
 ::jobject Java_com_arkanosis_jpdh_Query_nAddCounter(::JNIEnv* env, ::jobject query_, ::jstring fullPath_) {
+  jpdh::Query* query = getObject<jpdh::Query*>(env, query_);
   JNIString fullPath(env, fullPath_);
-  ::PDH_HCOUNTER counter;
-  ::PDH_STATUS status = ::PdhAddCounter(getObject<::PDH_HQUERY>(env, query_), fullPath, 0, &counter);
-  if (status != ERROR_SUCCESS) {
-    throwException(env, status);
+
+  if (query->hasCounter(fullPath)) {
+    env->ThrowNew(env->FindClass("com/arkanosis/jpdh/DuplicateCounterException"), fullPath);
     return 0;
   }
+
+  jpdh::PIDParser pidParser;
+  if (pidParser.parse(fullPath)) {
+    jpdh::ProcessCounter* counter = new jpdh::ProcessCounter(env, pidParser.getPID(), pidParser.getPrefix(), pidParser.getSuffix(), fullPath, query);
+    if (!counter->isValid()) {
+      delete counter;
+      return 0;
+    }
+    query->add(counter);
+    return newObject(env, "com/arkanosis/jpdh/Counter", counter);
+  } else if (pidParser.error()) {
+    env->ThrowNew(env->FindClass("com/arkanosis/jpdh/JPDHException"), pidParser.getErrorMessage().c_str());
+    return 0;
+  } else if (false) { // TODO FIXME has "\\Memory" in it
+    return 0;
+  } else if (false) { // TODO FIXME has "\\CpuCount" in it
+    return 0;
+  }
+  ::PDH_HCOUNTER handle;
+  ::PDH_STATUS status = ::PdhAddEnglishCounter(query->getHandle(), fullPath, 0, &handle);
+  if (status != ERROR_SUCCESS) {
+    jpdh::throwException(env, status);
+    return 0;
+  }
+  jpdh::Counter* counter = new jpdh::Counter(fullPath, handle);
+  query->add(counter);
   return newObject(env, "com/arkanosis/jpdh/Counter", counter);
 }
 
-void Java_com_arkanosis_jpdh_Query_collectData(::JNIEnv* env, ::jobject query_) {
-  ::PDH_STATUS status = ::PdhCollectQueryData(getObject<::PDH_HQUERY>(env, query_));
+void Java_com_arkanosis_jpdh_Query_removeCounter(::JNIEnv* env, ::jobject query_, ::jobject counter_) {
+  jpdh::Query* query = getObject<jpdh::Query*>(env, query_);
+  jpdh::Counter* counter = getObject<jpdh::Counter*>(env, counter_);
+  ::PDH_HCOUNTER handle;
+  if (!counter->getHandle(env, handle)) {
+    return;
+  }
+  ::PDH_STATUS status = ::PdhRemoveCounter(handle);
   if (status != ERROR_SUCCESS) {
-    throwException(env, status);
+    jpdh::throwException(env, status);
+  }
+  if (!query->remove(counter)) {
+    env->ThrowNew(env->FindClass("com/arkanosis/jpdh/JPDHException"), "Unable to remove counter from query");
+  }
+  delete counter;
+}
+
+void Java_com_arkanosis_jpdh_Query_collectData(::JNIEnv* env, ::jobject query_) {
+  jpdh::Query* query = getObject<jpdh::Query*>(env, query_);
+  ::PDH_STATUS status = ::PdhCollectQueryData(query->getHandle());
+  if (status != ERROR_SUCCESS) {
+    jpdh::throwException(env, status);
   }
 }
 
 void Java_com_arkanosis_jpdh_Query_close(::JNIEnv* env, ::jobject query_) {
-  ::PDH_STATUS status = ::PdhCloseQuery(getObject<::PDH_HQUERY>(env, query_));
+  jpdh::Query* query = getObject<jpdh::Query*>(env, query_);
+  ::PDH_STATUS status = ::PdhCloseQuery(query->getHandle());
   if (status != ERROR_SUCCESS) {
-    throwException(env, status);
+    jpdh::throwException(env, status);
   }
+  delete query;
 }
 
 ::jdouble Java_com_arkanosis_jpdh_Counter_getDoubleValue(::JNIEnv* env, ::jobject counter_) {
+  jpdh::Counter* counter = getObject<jpdh::Counter*>(env, counter_);
   DWORD type;
   ::PDH_FMT_COUNTERVALUE value;
-  ::PDH_STATUS status = ::PdhGetFormattedCounterValue(getObject<::PDH_HCOUNTER>(env, counter_), PDH_FMT_DOUBLE, &type, &value);
+  ::PDH_HCOUNTER handle;
+  if (!counter->getHandle(env, handle)) {
+    return .0;
+  }
+  ::PDH_STATUS status = ::PdhGetFormattedCounterValue(handle, PDH_FMT_DOUBLE, &type, &value);
   if (status != ERROR_SUCCESS) {
-    throwException(env, status);
+    jpdh::throwException(env, status);
     return .0;
   } else if (value.CStatus != PDH_CSTATUS_VALID_DATA && value.CStatus != PDH_CSTATUS_NEW_DATA) {
-    throwException(env, value.CStatus);
+    jpdh::throwException(env, value.CStatus);
     return .0;
   }
   return value.doubleValue;
 }
 
 ::jint Java_com_arkanosis_jpdh_Counter_getIntegerValue(::JNIEnv* env, ::jobject counter_) {
+  jpdh::Counter* counter = getObject<jpdh::Counter*>(env, counter_);
   DWORD type;
   ::PDH_FMT_COUNTERVALUE value;
-  ::PDH_STATUS status = ::PdhGetFormattedCounterValue(getObject<::PDH_HCOUNTER>(env, counter_), PDH_FMT_LONG, &type, &value);
+  ::PDH_HCOUNTER handle;
+  if (!counter->getHandle(env, handle)) {
+    return 0;
+  }
+  ::PDH_STATUS status = ::PdhGetFormattedCounterValue(handle, PDH_FMT_LONG, &type, &value);
   if (status != ERROR_SUCCESS) {
-    throwException(env, status);
+    jpdh::throwException(env, status);
     return 0;
   } else if (value.CStatus != PDH_CSTATUS_VALID_DATA && value.CStatus != PDH_CSTATUS_NEW_DATA) {
-    throwException(env, value.CStatus);
+    jpdh::throwException(env, value.CStatus);
     return 0;
   }
   return value.longValue;
 }
 
 ::jlong Java_com_arkanosis_jpdh_Counter_getLongValue(::JNIEnv* env, ::jobject counter_) {
+  jpdh::Counter* counter = getObject<jpdh::Counter*>(env, counter_);
   DWORD type;
   ::PDH_FMT_COUNTERVALUE value;
-  ::PDH_STATUS status = ::PdhGetFormattedCounterValue(getObject<::PDH_HCOUNTER>(env, counter_), PDH_FMT_LARGE, &type, &value);
+  ::PDH_HCOUNTER handle;
+  if (!counter->getHandle(env, handle)) {
+    return 0;
+  }
+  ::PDH_STATUS status = ::PdhGetFormattedCounterValue(handle, PDH_FMT_LARGE, &type, &value);
   if (status != ERROR_SUCCESS) {
-    throwException(env, status);
+    jpdh::throwException(env, status);
     return 0;
   } else if (value.CStatus != PDH_CSTATUS_VALID_DATA && value.CStatus != PDH_CSTATUS_NEW_DATA) {
-    throwException(env, value.CStatus);
+    jpdh::throwException(env, value.CStatus);
     return 0;
   }
   return value.largeValue;
-}
-
-void Java_com_arkanosis_jpdh_Counter_remove(::JNIEnv* env, ::jobject counter_) {
-  ::PDH_STATUS status = ::PdhRemoveCounter(getObject<::PDH_HCOUNTER>(env, counter_));
-  if (status != ERROR_SUCCESS) {
-    throwException(env, status);
-  }
 }
