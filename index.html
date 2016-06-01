@@ -69,8 +69,8 @@
             <h2 class="title">J<span class="highlight">PDH</span></h2>
             <p class="intro">Windows Performance Data Helper for Java</p>
             <div class="btns">
-                <a class="btn btn-cta-primary" href="https://github.com/Arkanosis/JPDH/releases/download/v1.1/jpdh.jar">Download v1.1</a>
-                <a class="btn btn-cta-secondary" href="https://github.com/Arkanosis/JPDH/releases/download/v1.1/jpdh.jar.asc">PGP signature</a>
+                <a class="btn btn-cta-primary" href="https://github.com/Arkanosis/JPDH/releases/download/v1.1.1/jpdh.jar">Download v1.1.1</a>
+                <a class="btn btn-cta-secondary" href="https://github.com/Arkanosis/JPDH/releases/download/v1.1.1/jpdh.jar.asc">PGP signature</a>
             </div>
             <ul class="meta list-inline">
                 <li><a href="https://github.com/arkanosis/JPDH">View on GitHub</a></li>
@@ -83,6 +83,12 @@
         <div class="container">
             <div class="docs-inner">
             <h2 class="title text-center">Get Started</h2>
+            <div class="block">
+                <h3 class="sub-title text-center">Why JPDH?</h3>
+                <p>JPDH exposes Windows performance data helper (<a href="https://msdn.microsoft.com/en-us/library/windows/desktop/aa373078(v=vs.85).aspx">PDH</a>) in the Java programming language, and provides some additional features that should have been in PDH but are not, such as the possibility to refer to processes by PID instead of process instance name (process instance name can change while PID can't).</p>
+                <p>JPDH is orders of magnitude faster than WMI and is a good alternative to the latter when performance is critical.</p>
+                <p>JPDH has been integrated as an alternative to WMI in the <a href="http://jrds.fr">JRDS</a> performance collector, where it provides much faster response times.</p>
+            </div><!--//block-->
             <div class="block">
                 <h3 class="sub-title text-center">Code sample</h3>
                 <p>Here's JPDH in action.</p>
@@ -114,6 +120,7 @@
             <h2 class="title text-center">Versions history</h2>
                 <div class="info">
                     <ul>
+                        <li>2016-06-01: version 1.1.1 — Bugfix release. Calling Query.removeCounter(counter) on counters associated with dead processes was throwing an exception.</li>
                         <li>2016-04-19: version 1.1 — Additional “PID” object which maps to the “Process” object for the right process instance and index</li>
                         <li>2016-04-01: version 1.0 — Initial version exposing PDH features in Java</li>
 		    </ul>
