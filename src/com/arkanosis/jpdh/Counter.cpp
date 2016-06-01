@@ -53,6 +53,15 @@ namespace jpdh {
     return true;
   }
 
+  bool Counter::removeHandle(::JNIEnv* env) {
+    ::PDH_STATUS status = ::PdhRemoveCounter(_handle);
+    if (status != ERROR_SUCCESS) {
+      throwException(env, status);
+      return false;
+    }
+    return true;
+  }
+
   ProcessCounter::ProcessCounter(::JNIEnv* env, ::DWORD pid, std::string const& prefix, std::string const& suffix, char const* fullPath, Query const* query)
     : Counter(fullPath, 0),
       _pid(pid),
@@ -120,6 +129,20 @@ namespace jpdh {
       }
     }
     handle = _handle;
+    return true;
+  }
+
+  bool ProcessCounter::removeHandle(::JNIEnv* env) {
+    ::PDH_STATUS status = ::PdhRemoveCounter(_pidHandle);
+    if (status != ERROR_SUCCESS) {
+      throwException(env, status);
+      return false;
+    }
+    status = ::PdhRemoveCounter(_handle);
+    if (status != ERROR_SUCCESS) {
+      throwException(env, status);
+      return false;
+    }
     return true;
   }
 

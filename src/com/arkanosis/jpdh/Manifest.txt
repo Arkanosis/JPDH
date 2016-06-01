@@ -5,4 +5,3 @@ Specification-Vendor: Jérémie Roquet
 Implementation-Title: com.arkanosis.jpdh
 Implementation-Version: 1.1
 Implementation-Vendor: Jérémie Roquet
-Main-Class: com.arkanosis.jpdh.JPDH

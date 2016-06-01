@@ -107,17 +107,11 @@ namespace {
 void Java_com_arkanosis_jpdh_Query_removeCounter(::JNIEnv* env, ::jobject query_, ::jobject counter_) {
   jpdh::Query* query = getObject<jpdh::Query*>(env, query_);
   jpdh::Counter* counter = getObject<jpdh::Counter*>(env, counter_);
-  ::PDH_HCOUNTER handle;
-  if (!counter->getHandle(env, handle)) {
-    return;
-  }
-  ::PDH_STATUS status = ::PdhRemoveCounter(handle);
-  if (status != ERROR_SUCCESS) {
-    jpdh::throwException(env, status);
-  }
   if (!query->remove(counter)) {
     env->ThrowNew(env->FindClass("com/arkanosis/jpdh/JPDHException"), "Unable to remove counter from query");
+    return;
   }
+  counter->removeHandle(env);
   delete counter;
 }
 
