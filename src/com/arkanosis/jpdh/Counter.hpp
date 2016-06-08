@@ -17,6 +17,7 @@ namespace jpdh {
     Counter(char const* fullPath, ::PDH_HCOUNTER handle);
     virtual ~Counter();
     std::string const& getFullPath() const;
+    virtual bool isValid() const;
     virtual bool getHandle(::JNIEnv* /* env */, ::PDH_HCOUNTER& handle);
     virtual bool removeHandle(::JNIEnv* env);
   protected:
@@ -29,7 +30,7 @@ namespace jpdh {
   public:
     ProcessCounter(::JNIEnv* env, ::DWORD pid, std::string const& prefix, std::string const& suffix, char const* fullPath, Query const* query);
     virtual ~ProcessCounter();
-    bool isValid() const;
+    virtual bool isValid() const override;
     virtual bool getHandle(::JNIEnv* env, ::PDH_HCOUNTER& handle) override;
     virtual bool removeHandle(::JNIEnv* env) override;
   private:

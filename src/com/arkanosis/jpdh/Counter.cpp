@@ -48,6 +48,10 @@ namespace jpdh {
     return _fullPath;
   }
 
+  bool Counter::isValid() const {
+    return true;
+  }
+
   bool Counter::getHandle(::JNIEnv* /* env */, ::PDH_HCOUNTER& handle) {
     handle = _handle;
     return true;
@@ -119,6 +123,7 @@ namespace jpdh {
           std::stringstream ss;
           ss << "Process with PID " << _pid << " is not available anymore";
           env->ThrowNew(env->FindClass("com/arkanosis/jpdh/NoSuchPIDException"), ss.str().c_str());
+          _valid = false;
         }
         return false;
       }

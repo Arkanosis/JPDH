@@ -111,7 +111,9 @@ void Java_com_arkanosis_jpdh_Query_removeCounter(::JNIEnv* env, ::jobject query_
     env->ThrowNew(env->FindClass("com/arkanosis/jpdh/JPDHException"), "Unable to remove counter from query");
     return;
   }
-  counter->removeHandle(env);
+  if (counter->isValid()) {
+    counter->removeHandle(env);
+  }
   delete counter;
 }
 
