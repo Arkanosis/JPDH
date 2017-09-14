@@ -83,15 +83,16 @@ namespace {
   }
 
   bool test_process_parser() {
-    jpdh::ProcessParser parser;
+    std::string processCounter = R"=(\Process()=";
+    jpdh::ProcessParser parser(processCounter);
     return (
       assert_parse_process(parser, R"=(\\foo\Process(blah#21)\myCount)=", "blah#21") &&
       assert_parse_process(parser, R"=(\Process(bim)\myCount)=", "bim") &&
       assert_not_parse(parser, R"=(\\foo\PID(32)\blah)=", false) &&
       assert_not_parse(parser, R"=(\\foo\Process=)=", false) &&
       assert_not_parse(parser, R"=(\\foo\Pro=)=", false) &&
-      assert_not_parse(parser, R"=(\\foo\Process()\blah)=", true, "Invalid process name in expression 'Process()'") &&
-      assert_not_parse(parser, R"=(\\foo\Process()=", true, "Unexpected end of process in expression 'Process('")
+      assert_not_parse(parser, R"=(\\foo\Process()\blah)=", true, "Invalid process name in expression '\\Process()'") &&
+      assert_not_parse(parser, R"=(\\foo\Process()=", true, "Unexpected end of process in expression '\\Process('")
     );
   }
 

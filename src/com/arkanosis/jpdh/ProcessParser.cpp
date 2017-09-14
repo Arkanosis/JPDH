@@ -4,8 +4,9 @@
 
 namespace jpdh {
 
-  ProcessParser::ProcessParser()
-    : _process(),
+  ProcessParser::ProcessParser(std::string const& processCounter)
+    : _processCounter(processCounter),
+      _process(),
       _error(false),
       _errorMessage() {
   }
@@ -15,37 +16,28 @@ namespace jpdh {
     for (char const* first = fullPath;
          *first;
          ++first) {
-      if (*first == '\\') {
-        char const* last = ++first;
-        if (*last++ == 'P' &&
-            *last++ == 'r' &&
-            *last++ == 'o' &&
-            *last++ == 'c' &&
-            *last++ == 'e' &&
-            *last++ == 's' &&
-            *last++ == 's' &&
-            *last++ == '(') {
-          char const* name = last;
-          while (char character = *last++) {
-            if (character == ')' &&
-                *last == '\\') {
-              if (last == name + 1) {
-                _error = true;
-                std::stringstream ss;
-                ss << "Invalid process name in expression '" << std::string(first, last) << "'";
-                _errorMessage.assign(ss.str());
-                return false;
-              }
-              _process.assign(name, std::distance(name, last) - 1);
-              return true;
+      if (!_processCounter.compare(0, std::string::npos, first, _processCounter.length())) {
+        char const* last = first + _processCounter.length();
+        char const* name = last;
+        while (char character = *last++) {
+          if (character == ')' &&
+              *last == '\\') {
+            if (last == name + 1) {
+              _error = true;
+              std::stringstream ss;
+              ss << "Invalid process name in expression '" << std::string(first, last) << "'";
+              _errorMessage.assign(ss.str());
+              return false;
             }
+            _process.assign(name, std::distance(name, last) - 1);
+            return true;
           }
-          _error = true;
-          std::stringstream ss;
-          ss << "Unexpected end of process in expression '" << std::string(first, last - 1) << "'";
-          _errorMessage.assign(ss.str());
-          return false;
         }
+        _error = true;
+        std::stringstream ss;
+        ss << "Unexpected end of process in expression '" << std::string(first, last - 1) << "'";
+        _errorMessage.assign(ss.str());
+        return false;
       }
     }
     return false;

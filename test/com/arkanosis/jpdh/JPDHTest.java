@@ -9,7 +9,7 @@ public class JPDHTest {
     public static void main(String[] args) throws Exception {
         try (Query query = JPDH.openQuery()) {
             Counter diskCounter = query.addCounter("\\PhysicalDisk(_Total)\\Disk Read Bytes/sec");
-            Counter cpuCounter = query.addCounter("\\PID(8584)\\% User Time");
+            Counter cpuCounter = query.addCounter("\\PID(7600)\\% User Time");
             query.collectData();
             for (int nbLoops = 3; nbLoops > 0; --nbLoops) {
                 try {

@@ -34,8 +34,13 @@ namespace jpdh {
     virtual bool getHandle(::JNIEnv* env, ::PDH_HCOUNTER& handle) override;
     virtual bool removeHandle(::JNIEnv* env) override;
   private:
+    static void _fillLocalizedStrings(::JNIEnv* env);
+    static std::string const& _getPidPattern(::JNIEnv* env);
+    static std::string const& _getProcessCounter(::JNIEnv* env);
     bool _setHandles(::JNIEnv* env);
   protected:
+    static std::string _pidPattern;
+    static std::string _processCounter;
     ::DWORD const _pid;
     std::string _prefix;
     std::string _suffix;
