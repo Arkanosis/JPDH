@@ -38,9 +38,9 @@ Any valid PDH counter path can be used, and additional counter path using the no
 
 ## History
 
-* 2017-09-14: version 1.1.3 — Bugfix release
-* 2016-06-08: version 1.1.2 — Bugfix release
-* 2016-06-01: version 1.1.1 — Bugfix release
+* 2017-09-14: version 1.1.3 — Bugfix release. The virtual “PID” object didn't work on localized (eg. German) versions of Windows.
+* 2016-06-08: version 1.1.2 — Bugfix release. Calling Query.removeCounter(counter) on counters associated with dead processes was throwing an exception.
+* 2016-06-01: version 1.1.1 — Bugfix release. Calling Query.removeCounter(counter) on counters associated with dead processes was throwing an exception.
 * 2016-04-19: version 1.1 — Additional “PID” object which maps to the “Process” object for the right process instance and index
 * 2016-04-01: version 1.0 — Initial version exposing PDH features in Java
 
