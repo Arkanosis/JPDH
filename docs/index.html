@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
+<!--[if IE 9]> <html lang="en" class="ie9"> <![endif]-->
+<!--[if !IE]><!--> <html lang="en"> <!--<![endif]-->
+<head>
+    <title>JPDH — Windows Performance Data Helper for Java</title>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="Jérémie Roquet">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,300italic,400italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css">
+    <!-- Plugins CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.1/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.4.1/themes/prism-okaidia.min.css">
+    <!-- Theme CSS -->
+    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body data-spy="scroll">
+
+    <!-- ******HEADER****** -->
+    <header id="header" class="header">
+        <div class="container">
+            <h1 class="logo pull-left">
+                <a class="scrollto" href="#promo">
+                    <span class="logo-title">JPDH</span>
+                </a>
+            </h1><!--//logo-->
+            <nav id="main-nav" class="main-nav navbar-right" role="navigation">
+                <div class="navbar-header">
+                    <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button><!--//nav-toggle-->
+                </div><!--//navbar-header-->
+                <div class="navbar-collapse collapse" id="navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="active nav-item sr-only"><a class="scrollto" href="#promo">Home</a></li>
+                        <!-- <li class="nav-item"><a class="scrollto" href="#about">About</a></li> -->
+                        <li class="nav-item"><a class="scrollto" href="#docs">Docs</a></li>
+                        <li class="nav-item"><a class="scrollto" href="#license">History</a></li>
+                        <li class="nav-item"><a class="scrollto" href="#license">License</a></li>
+                        <li class="nav-item last"><a class="scrollto" href="#contact">Contact</a></li>
+                    </ul><!--//nav-->
+                </div><!--//navabr-collapse-->
+            </nav><!--//main-nav-->
+        </div>
+
+	<p><a href="https://github.com/arkanosis/jpdh/"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a></p>
+
+    </header><!--//header-->
+
+    <!-- ******PROMO****** -->
+    <section id="promo" class="promo section offset-header">
+        <div class="container text-center">
+            <h2 class="title">J<span class="highlight">PDH</span></h2>
+            <p class="intro">Windows Performance Data Helper for Java</p>
+            <div class="btns">
+                <a class="btn btn-cta-primary" href="https://github.com/Arkanosis/JPDH/releases/download/v1.1.3/jpdh.jar">Download v1.1.3</a>
+                <a class="btn btn-cta-secondary" href="https://github.com/Arkanosis/JPDH/releases/download/v1.1.3/jpdh.jar.asc">PGP signature</a>
+            </div>
+            <ul class="meta list-inline">
+                <li><a href="https://github.com/arkanosis/JPDH">View on GitHub</a></li>
+            </ul><!--//meta-->
+        </div><!--//container-->
+    </section><!--//promo-->
+
+    <!-- ******DOCS****** -->
+    <section id="docs" class="docs section">
+        <div class="container">
+            <div class="docs-inner">
+            <h2 class="title text-center">Get Started</h2>
+            <div class="block">
+                <h3 class="sub-title text-center">Why JPDH?</h3>
+                <p>JPDH exposes Windows performance data helper (<a href="https://msdn.microsoft.com/en-us/library/windows/desktop/aa373078(v=vs.85).aspx">PDH</a>) in the Java programming language, and provides some additional features that should have been in PDH but are not, such as the possibility to refer to processes by PID instead of process instance name (process instance name can change while PID can't).</p>
+                <p>JPDH is orders of magnitude faster than WMI and is a good alternative to the latter when performance is critical.</p>
+                <p>JPDH has been integrated as an alternative to WMI in the <a href="http://jrds.fr">JRDS</a> performance collector, where it provides much faster response times.</p>
+            </div><!--//block-->
+            <div class="block">
+                <h3 class="sub-title text-center">Code sample</h3>
+                <p>Here's JPDH in action.</p>
+                <div class="code-block">
+                    <pre><code class="language-javascript">
+    import com.arkanosis.jpdh.Counter;
+    import com.arkanosis.jpdh.JPDH;
+    import com.arkanosis.jpdh.Query;
+
+    try (Query query = JPDH.openQuery()) {
+        Counter diskCounter = query.addCounter("\\PhysicalDisk(_Total)\\Disk Read Bytes/sec");
+        Counter cpuCounter = query.addCounter("\\PID(8584)\\% User Time");
+        query.collectData();
+        System.out.println(diskCounter.getDoubleValue());
+        System.out.println(cpuCounter.getIntegerValue());
+        query.removeCounter(diskCounter);
+    }
+                    </code></pre>
+                </div><!--//code-block-->
+            </div><!--//block-->
+            </div><!--//docs-inner-->
+        </div><!--//container-->
+    </section><!--//features-->
+
+    <!-- ******HISTORY****** -->
+    <section id="history" class="history section">
+        <div class="container">
+            <div class="history-inner">
+            <h2 class="title text-center">Versions history</h2>
+                <div class="info">
+                    <ul>
+                        <li>2017-09-14: version 1.1.3 — Bugfix release. The virtual “PID” object didn't work on localized (eg. German) versions of Windows.</li>
+                        <li>2016-06-08: version 1.1.2 — Bugfix release. Calling Query.removeCounter(counter) on counters associated with dead processes was throwing an exception.</li>
+                        <li>2016-06-01: version 1.1.1 — Bugfix release. Calling Query.removeCounter(counter) on counters associated with dead processes was throwing an exception.</li>
+                        <li>2016-04-19: version 1.1 — Additional “PID” object which maps to the “Process” object for the right process instance and index</li>
+                        <li>2016-04-01: version 1.0 — Initial version exposing PDH features in Java</li>
+                    </ul>
+                </div><!--//info-->
+            </div><!--//history-inner-->
+        </div><!--//container-->
+    </section><!--//how-->
+
+    <!-- ******LICENSE****** -->
+    <section id="license" class="license section">
+        <div class="container">
+            <div class="license-inner">
+            <h2 class="title text-center">License</h2>
+                <div class="info">
+                    <p>JPDH is Copyright (c) 2016-2017, Jérémie Roquet. JPDH is provided under the terms of the BSD 2-clause license.</p>
+                </div><!--//info-->
+            </div><!--//license-inner-->
+        </div><!--//container-->
+    </section><!--//how-->
+
+    <!-- ******CONTACT****** -->
+    <section id="contact" class="contact section has-pattern">
+        <div class="container">
+            <div class="contact-inner">
+                <h2 class="title  text-center">Contact</h2>
+                <p class="intro  text-center">Bug reports, suggestions and pull requests are welcome <a href="https://github.com/arkanosis/JPDH">on GitHub</a>.</p>
+                <div class="clearfix"></div>
+                <div class="info text-center">
+                    <h4 class="sub-title">Get Connected</h4>
+                    <ul class="social-icons list-inline">
+                        <li><a href="https://github.com/arkanosis/jpdh"><i class="fa fa-github"></i></a></li>
+                        <li><a href="https://twitter.com/arkanosis"><i class="fa fa-twitter"></i></a></li>
+                        <li><a href="https://www.linkedin.com/in/jroquet"><i class="fa fa-linkedin"></i></a></li>
+                        <li class="last"><a href="mailto:jroquet@arkanosis.net"><i class="fa fa-envelope"></i></a></li>
+                    </ul>
+                </div><!--//info-->
+            </div><!--//contact-inner-->
+        </div><!--//container-->
+    </section><!--//contact-->
+
+    <!-- ******FOOTER****** -->
+    <footer class="footer">
+        <div class="container text-center">
+            <!--/* This template is released under the Creative Commons Attribution 3.0 License. Please keep the attribution link below when using for your own project. Thank you for your support. :) If you'd like to use the template without the attribution, you can check out other license options via our website: themes.3rdwavemedia.com */-->
+            <small class="copyright">Design based on a theme made with <i class="fa fa-heart"></i> by <a href="http://themes.3rdwavemedia.com">Xiaoying Riley</a>, under CC-BY 3.0</small>
+        </div><!--//container-->
+    </footer><!--//footer-->
+
+    <!-- Javascript -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-scrollTo/2.1.2/jquery.scrollTo.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.4.1/prism.min.js"></script>
+    <script type="text/javascript" src="assets/js/main.js"></script>
+</body>
+</html>
