@@ -18,23 +18,27 @@ Add jpdh.jar in your CLASSPATH.
 
 ## Usage
 
-    import com.arkanosis.jpdh.Counter;
-    import com.arkanosis.jpdh.JPDH;
-    import com.arkanosis.jpdh.Query;
+```java
+import com.arkanosis.jpdh.Counter;
+import com.arkanosis.jpdh.JPDH;
+import com.arkanosis.jpdh.Query;
 
-    try (Query query = JPDH.openQuery()) {
-        Counter diskCounter = query.addCounter("\\PhysicalDisk(_Total)\\Disk Read Bytes/sec");
-        Counter cpuCounter = query.addCounter("\\PID(8584)\\% User Time");
-        query.collectData();
-        System.out.println(diskCounter.getDoubleValue());
-        System.out.println(cpuCounter.getIntegerValue());
-        query.removeCounter(diskCounter);
-    }
+try (Query query = JPDH.openQuery()) {
+	Counter diskCounter = query.addCounter("\\PhysicalDisk(_Total)\\Disk Read Bytes/sec");
+	Counter cpuCounter = query.addCounter("\\PID(8584)\\% User Time");
+	query.collectData();
+	System.out.println(diskCounter.getDoubleValue());
+	System.out.println(cpuCounter.getIntegerValue());
+	query.removeCounter(diskCounter);
+}
+```
 
 Any valid PDH counter path can be used, and additional counter path using the non-PDH “PID” object can be used as well:
 
-    \\computer\Process(parent/instance#index)\counter
-    \\computer\PID(pid)\counter
+```
+\\computer\Process(parent/instance#index)\counter
+\\computer\PID(pid)\counter
+```
 
 ## History
 
