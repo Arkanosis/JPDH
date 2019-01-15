@@ -3,6 +3,7 @@ JAVA ?= java.exe
 JAVAH ?= javah.exe
 JAVAC ?= javac.exe
 JAR ?= jar.exe
+JAVADOC ?= javadoc.exe
 CXX ?= cl.exe
 LD ?= link.exe
 CXXFLAGS ?= -nologo -D_HAS_EXCEPTIONS=0
@@ -55,7 +56,16 @@ jnijpdh.dll: $(CPPOBJ)
 jpdh.jar: $(JPDH)/Manifest.txt $(JAVACLASS) jnijpdh.dll
 	$(JAR) cfm $@ $^
 
-jpdh.jar.asc: jpdh.jar
+jpdh-sources.jar: $(JPDH)/Manifest.txt $(JAVASRC)
+	$(JAR) cfm $@ $^
+
+javadoc: $(JAVASRC)
+	$(JAVADOC) -d $@ $^
+
+jpdh-javadoc.jar: $(JPDH)/Manifest.txt javadoc
+	$(JAR) cfm $@ $< -C javadoc .
+
+%.jar.asc: %.jar
 	gpg --default-key jroquet@arkanosis.net --output $@ --detach-sig $<
 
 test: jpdh.jar
