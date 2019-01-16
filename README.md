@@ -1,20 +1,29 @@
-# JPDH — Windows Performance Data Helper for Java
+# JPDH — Windows Performance Data Helper for Java [![Maven Central](https://img.shields.io/maven-central/v/com.arkanosis/jpdh.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.arkanosis%22%20AND%20a:%22jpdh%22) [![License](https://img.shields.io/badge/license-BSD-blue.svg)](/LICENSE)
 
 JPDH is a Java library to retrieve performance counter values on Microsoft
 Windows using the PDH (Performance Data Helper) API and some additional features built on top of it.
 
-## Build
-
-Run `make`.
-
-If you don't have a POSIX environment under Windows, you might want to have
-a look at [MSYS2](https://msys2.github.io/).
-
-Additionally, you may run the test suite using `make runtest`.
-
 ## Installation
 
-Add jpdh.jar in your CLASSPATH.
+### Manually
+
+Add jpdh.jar to your CLASSPATH.
+
+### With Maven
+
+```xml
+<dependency>
+  <groupId>com.arkanosis</groupId>
+  <artifactId>jpdh</artifactId>
+  <version>1.1.3</version>
+</dependency>
+```
+
+### With Gradle
+
+```kotlin
+compile("com.arkanosis:jpdh:1.1.3")
+```
 
 ## Usage
 
@@ -39,6 +48,15 @@ Any valid PDH counter path can be used, and additional counter path using the no
 \\computer\Process(parent/instance#index)\counter
 \\computer\PID(pid)\counter
 ```
+
+## Build
+
+Run `make`.
+
+If you don't have a POSIX environment under Windows, you might want to have
+a look at [MSYS2](https://msys2.github.io/).
+
+Additionally, you may run the test suite using `make runtest`.
 
 ## History
 
