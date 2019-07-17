@@ -4,6 +4,12 @@
 
 namespace jpdh {
 
+  void throwException(const char* exception, ::JNIEnv* env, const char* message, const char* file, long line) {
+    std::stringstream ss;
+    ss << file << ":" << line << ": " << message;
+    env->ThrowNew(env->FindClass(exception), ss.str().c_str());
+  }
+
   void throwException(::JNIEnv* env, ::PDH_STATUS status, const char* file, long line) {
     HMODULE handle = ::GetModuleHandle("Pdh.Dll");
     if (handle) {
@@ -16,12 +22,10 @@ namespace jpdh {
                       reinterpret_cast<LPTSTR>(&message),
                       0,
                       nullptr);
-      std::stringstream fullMessage;
-      fullMessage << file << ":" << line << ": " << message;
-      env->ThrowNew(env->FindClass("com/arkanosis/jpdh/JPDHException"), fullMessage.str().c_str());
+      throwException("com/arkanosis/jpdh/JPDHException", env, message, file, line);
       ::LocalFree(message);
     } else {
-      env->ThrowNew(env->FindClass("com/arkanosis/jpdh/JPDHException"), "Unable to get Pdh.Dll module handle");
+      throwException("com/arkanosis/jpdh/JPDHException", env, "Unable to get Pdh.Dll module handle", file, line);
     }
   }
 

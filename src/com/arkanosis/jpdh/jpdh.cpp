@@ -72,7 +72,7 @@ namespace {
   JNIString fullPath(env, fullPath_);
 
   if (query->hasCounter(fullPath)) {
-    env->ThrowNew(env->FindClass("com/arkanosis/jpdh/DuplicateCounterException"), fullPath);
+    THROW("com/arkanosis/jpdh/DuplicateCounterException", env, fullPath);
     return 0;
   }
 
@@ -86,7 +86,7 @@ namespace {
     query->add(counter);
     return newObject(env, "com/arkanosis/jpdh/Counter", counter);
   } else if (pidParser.error()) {
-    env->ThrowNew(env->FindClass("com/arkanosis/jpdh/JPDHException"), pidParser.getErrorMessage().c_str());
+    THROW("com/arkanosis/jpdh/JPDHException", env, pidParser.getErrorMessage().c_str());
     return 0;
   } else if (false) { // TODO FIXME has "\\Memory" in it
     return 0;
@@ -108,7 +108,7 @@ void Java_com_arkanosis_jpdh_Query_removeCounter(::JNIEnv* env, ::jobject query_
   jpdh::Query* query = getObject<jpdh::Query*>(env, query_);
   jpdh::Counter* counter = getObject<jpdh::Counter*>(env, counter_);
   if (!query->remove(counter)) {
-    env->ThrowNew(env->FindClass("com/arkanosis/jpdh/JPDHException"), "Unable to remove counter from query");
+    THROW("com/arkanosis/jpdh/JPDHException", env, "Unable to remove counter from query");
     return;
   }
   if (counter->isValid()) {

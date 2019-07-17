@@ -137,7 +137,7 @@ namespace jpdh {
       if (_valid) {
         std::stringstream ss;
         ss << "No process found for PID " << _pid;
-        env->ThrowNew(env->FindClass("com/arkanosis/jpdh/NoSuchPIDException"), ss.str().c_str());
+        THROW("com/arkanosis/jpdh/NoSuchPIDException", env, ss.str().c_str());
         _valid = false;
       }
     }
@@ -179,7 +179,7 @@ namespace jpdh {
         if (_valid) {
           std::stringstream ss;
           ss << "Process with PID " << _pid << " is not available anymore";
-          env->ThrowNew(env->FindClass("com/arkanosis/jpdh/NoSuchPIDException"), ss.str().c_str());
+          THROW("com/arkanosis/jpdh/NoSuchPIDException", env, ss.str().c_str());
           _valid = false;
         }
         return false;
@@ -247,37 +247,40 @@ namespace jpdh {
       DWORD type;
       ::PDH_FMT_COUNTERVALUE value;
       status = ::PdhGetFormattedCounterValue(counter.handle, PDH_FMT_LONG, &type, &value);
-      if (status != ERROR_SUCCESS) {
-        THROW_EXCEPTION(env, status);
-        return false;
-      } else if (value.CStatus != PDH_CSTATUS_VALID_DATA && value.CStatus != PDH_CSTATUS_NEW_DATA) {
-        THROW_EXCEPTION(env, value.CStatus);
-        return false;
-      }
-      if (value.longValue == _pid) {
-        status = ::PdhAddCounter(_query->getHandle(), paths.get() + counter.offset, 0, &_pidHandle);
-        if (status != ERROR_SUCCESS) {
-          THROW_EXCEPTION(env, status);
+      if (status == ERROR_SUCCESS) {
+        if (value.CStatus != PDH_CSTATUS_VALID_DATA && value.CStatus != PDH_CSTATUS_NEW_DATA) {
+          THROW_EXCEPTION(env, value.CStatus);
           return false;
         }
-        if (!_processParser.parse(paths.get() + counter.offset)) {
-          std::stringstream ss;
-          ss << "Unable to get process name for PID " << _pid;
-          if (_processParser.error()) {
-            ss << ": " << _processParser.getErrorMessage();
+        if (value.longValue == _pid) {
+          status = ::PdhAddCounter(_query->getHandle(), paths.get() + counter.offset, 0, &_pidHandle);
+          if (status != ERROR_SUCCESS) {
+            std::stringstream ss;
+            ss << "Process with PID " << _pid << " is not available anymore";
+            THROW("com/arkanosis/jpdh/NoSuchPIDException", env, ss.str().c_str());
+            return false;
           }
-          env->ThrowNew(env->FindClass("com/arkanosis/jpdh/JPDHException"), ss.str().c_str());
-          return false;
+          if (!_processParser.parse(paths.get() + counter.offset)) {
+            std::stringstream ss;
+            ss << "Unable to get process name for PID " << _pid;
+            if (_processParser.error()) {
+              ss << ": " << _processParser.getErrorMessage();
+            }
+            THROW("com/arkanosis/jpdh/JPDHException", env, ss.str().c_str());
+            return false;
+          }
+          std::stringstream fullPath;
+          fullPath << _prefix << "Process(" << _processParser.getProcess() << ")" << _suffix;
+          status = ::PdhAddEnglishCounter(_query->getHandle(), fullPath.str().c_str(), 0, &_handle);
+          if (status != ERROR_SUCCESS) {
+            std::stringstream ss;
+            ss << "Process with PID " << _pid << " is not available anymore";
+            THROW("com/arkanosis/jpdh/NoSuchPIDException", env, ss.str().c_str());
+            return false;
+          }
+          _valid = true;
+          return true;
         }
-        std::stringstream fullPath;
-        fullPath << _prefix << "Process(" << _processParser.getProcess() << ")" << _suffix;
-        status = ::PdhAddEnglishCounter(_query->getHandle(), fullPath.str().c_str(), 0, &_handle);
-        if (status != ERROR_SUCCESS) {
-          THROW_EXCEPTION(env, status);
-          return false;
-        }
-        _valid = true;
-        return true;
       }
     }
     _valid = true;
