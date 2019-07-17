@@ -76,6 +76,7 @@ namespace jpdh {
       THROW_EXCEPTION(env, status);
       return;
     }
+    AutoCloseableQuery autoCloseableQuery(env, query);
     ::PDH_HCOUNTER counterHandle;
     status = ::PdhAddEnglishCounter(query, "\\Process(*)\\ID Process", 0, &counterHandle);
     if (status != ERROR_SUCCESS) {
@@ -97,11 +98,6 @@ namespace jpdh {
     }
     _pidPattern = counterInfo->szFullPath + 1;
     ::PdhRemoveCounter(counterHandle);
-    if (status != ERROR_SUCCESS) {
-      THROW_EXCEPTION(env, status);
-      return;
-    }
-    ::PdhCloseQuery(query);
     if (status != ERROR_SUCCESS) {
       THROW_EXCEPTION(env, status);
       return;
