@@ -61,7 +61,7 @@ namespace {
   ::PDH_HQUERY query;
   ::PDH_STATUS status = ::PdhOpenQuery(dataSource, 0, &query);
   if (status != ERROR_SUCCESS) {
-    jpdh::throwException(env, status);
+    THROW_EXCEPTION(env, status);
     return 0;
   }
   return newObject(env, "com/arkanosis/jpdh/Query", new jpdh::Query(dataSource, query));
@@ -96,7 +96,7 @@ namespace {
   ::PDH_HCOUNTER handle;
   ::PDH_STATUS status = ::PdhAddEnglishCounter(query->getHandle(), fullPath, 0, &handle);
   if (status != ERROR_SUCCESS) {
-    jpdh::throwException(env, status);
+    THROW_EXCEPTION(env, status);
     return 0;
   }
   jpdh::Counter* counter = new jpdh::Counter(fullPath, handle);
@@ -121,7 +121,7 @@ void Java_com_arkanosis_jpdh_Query_collectData(::JNIEnv* env, ::jobject query_) 
   jpdh::Query* query = getObject<jpdh::Query*>(env, query_);
   ::PDH_STATUS status = ::PdhCollectQueryData(query->getHandle());
   if (status != ERROR_SUCCESS) {
-    jpdh::throwException(env, status);
+    THROW_EXCEPTION(env, status);
   }
 }
 
@@ -129,7 +129,7 @@ void Java_com_arkanosis_jpdh_Query_close(::JNIEnv* env, ::jobject query_) {
   jpdh::Query* query = getObject<jpdh::Query*>(env, query_);
   ::PDH_STATUS status = ::PdhCloseQuery(query->getHandle());
   if (status != ERROR_SUCCESS) {
-    jpdh::throwException(env, status);
+    THROW_EXCEPTION(env, status);
   }
   delete query;
 }
@@ -144,10 +144,10 @@ void Java_com_arkanosis_jpdh_Query_close(::JNIEnv* env, ::jobject query_) {
   }
   ::PDH_STATUS status = ::PdhGetFormattedCounterValue(handle, PDH_FMT_DOUBLE, &type, &value);
   if (status != ERROR_SUCCESS) {
-    jpdh::throwException(env, status);
+    THROW_EXCEPTION(env, status);
     return .0;
   } else if (value.CStatus != PDH_CSTATUS_VALID_DATA && value.CStatus != PDH_CSTATUS_NEW_DATA) {
-    jpdh::throwException(env, value.CStatus);
+    THROW_EXCEPTION(env, value.CStatus);
     return .0;
   }
   return value.doubleValue;
@@ -163,10 +163,10 @@ void Java_com_arkanosis_jpdh_Query_close(::JNIEnv* env, ::jobject query_) {
   }
   ::PDH_STATUS status = ::PdhGetFormattedCounterValue(handle, PDH_FMT_LONG, &type, &value);
   if (status != ERROR_SUCCESS) {
-    jpdh::throwException(env, status);
+    THROW_EXCEPTION(env, status);
     return 0;
   } else if (value.CStatus != PDH_CSTATUS_VALID_DATA && value.CStatus != PDH_CSTATUS_NEW_DATA) {
-    jpdh::throwException(env, value.CStatus);
+    THROW_EXCEPTION(env, value.CStatus);
     return 0;
   }
   return value.longValue;
@@ -182,10 +182,10 @@ void Java_com_arkanosis_jpdh_Query_close(::JNIEnv* env, ::jobject query_) {
   }
   ::PDH_STATUS status = ::PdhGetFormattedCounterValue(handle, PDH_FMT_LARGE, &type, &value);
   if (status != ERROR_SUCCESS) {
-    jpdh::throwException(env, status);
+    THROW_EXCEPTION(env, status);
     return 0;
   } else if (value.CStatus != PDH_CSTATUS_VALID_DATA && value.CStatus != PDH_CSTATUS_NEW_DATA) {
-    jpdh::throwException(env, value.CStatus);
+    THROW_EXCEPTION(env, value.CStatus);
     return 0;
   }
   return value.largeValue;

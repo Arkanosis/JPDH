@@ -6,8 +6,10 @@
 
 namespace jpdh {
 
-  void throwException(::JNIEnv* env, ::PDH_STATUS status);
+  void throwException(::JNIEnv* env, ::PDH_STATUS status, const char* file, long line);
 
 } // namespace jpdh
+
+#define THROW_EXCEPTION(ENV, STATUS) jpdh::throwException(ENV, STATUS, __FILE__, __LINE__)
 
 #endif // !JPDH_UTILS_HPP_

@@ -26,7 +26,7 @@ namespace jpdh {
       ~AutoCloseableQuery() {
         ::PDH_STATUS status = ::PdhCloseQuery(_query);
         if (status != ERROR_SUCCESS) {
-          throwException(_env, status);
+          THROW_EXCEPTION(_env, status);
         }
       }
     private:
@@ -60,7 +60,7 @@ namespace jpdh {
   bool Counter::removeHandle(::JNIEnv* env) {
     ::PDH_STATUS status = ::PdhRemoveCounter(_handle);
     if (status != ERROR_SUCCESS) {
-      throwException(env, status);
+      THROW_EXCEPTION(env, status);
       return false;
     }
     return true;
@@ -73,37 +73,37 @@ namespace jpdh {
     ::PDH_HQUERY query;
     ::PDH_STATUS status = ::PdhOpenQuery(nullptr, 0, &query);
     if (status != ERROR_SUCCESS) {
-      throwException(env, status);
+      THROW_EXCEPTION(env, status);
       return;
     }
     ::PDH_HCOUNTER counterHandle;
     status = ::PdhAddEnglishCounter(query, "\\Process(*)\\ID Process", 0, &counterHandle);
     if (status != ERROR_SUCCESS) {
-      throwException(env, status);
+      THROW_EXCEPTION(env, status);
       return;
     }
     DWORD bufferSize = 0;
     status = ::PdhGetCounterInfo(counterHandle, false, &bufferSize, nullptr);
     if (status != PDH_MORE_DATA) {
-      throwException(env, status);
+      THROW_EXCEPTION(env, status);
       return;
     }
     std::unique_ptr<char[]> counterInfoBytes(new char[bufferSize]);
     auto counterInfo = reinterpret_cast<PDH_COUNTER_INFO*>(counterInfoBytes.get());
     status = ::PdhGetCounterInfo(counterHandle, false, &bufferSize, counterInfo);
     if (status != ERROR_SUCCESS) {
-      throwException(env, status);
+      THROW_EXCEPTION(env, status);
       return;
     }
     _pidPattern = counterInfo->szFullPath + 1;
     ::PdhRemoveCounter(counterHandle);
     if (status != ERROR_SUCCESS) {
-      throwException(env, status);
+      THROW_EXCEPTION(env, status);
       return;
     }
     ::PdhCloseQuery(query);
     if (status != ERROR_SUCCESS) {
-      throwException(env, status);
+      THROW_EXCEPTION(env, status);
       return;
     }
     std::size_t processCounterLength = 0;
@@ -160,10 +160,10 @@ namespace jpdh {
       ::PDH_FMT_COUNTERVALUE currentPid;
       ::PDH_STATUS status = ::PdhGetFormattedCounterValue(_pidHandle, PDH_FMT_LONG, &type, &currentPid);
       if (status != ERROR_SUCCESS) {
-        throwException(env, status);
+        THROW_EXCEPTION(env, status);
         return false;
       } else if (currentPid.CStatus != PDH_CSTATUS_VALID_DATA && currentPid.CStatus != PDH_CSTATUS_NEW_DATA) {
-        throwException(env, currentPid.CStatus);
+        THROW_EXCEPTION(env, currentPid.CStatus);
         return false;
       }
       if (currentPid.longValue == _pid) {
@@ -171,12 +171,12 @@ namespace jpdh {
       }
       status = ::PdhRemoveCounter(_pidHandle);
       if (status != ERROR_SUCCESS) {
-        throwException(env, status);
+        THROW_EXCEPTION(env, status);
         return false;
       }
       status = ::PdhRemoveCounter(_handle);
       if (status != ERROR_SUCCESS) {
-        throwException(env, status);
+        THROW_EXCEPTION(env, status);
         return false;
       }
       if (!_setHandles(env)) {
@@ -190,7 +190,7 @@ namespace jpdh {
       }
       status = ::PdhCollectQueryData(_query->getHandle());
       if (status != ERROR_SUCCESS) {
-        throwException(env, status);
+        THROW_EXCEPTION(env, status);
         return false;
       }
     }
@@ -201,12 +201,12 @@ namespace jpdh {
   bool ProcessCounter::removeHandle(::JNIEnv* env) {
     ::PDH_STATUS status = ::PdhRemoveCounter(_pidHandle);
     if (status != ERROR_SUCCESS) {
-      throwException(env, status);
+      THROW_EXCEPTION(env, status);
       return false;
     }
     status = ::PdhRemoveCounter(_handle);
     if (status != ERROR_SUCCESS) {
-      throwException(env, status);
+      THROW_EXCEPTION(env, status);
       return false;
     }
     return true;
@@ -216,19 +216,19 @@ namespace jpdh {
     DWORD bufferSize = 0;
     ::PDH_STATUS status = ::PdhExpandWildCardPath(_query->hasDataSource() ? _query->getDataSource().c_str() : nullptr, _pidPath.c_str(), nullptr, &bufferSize, 0);
     if (status != PDH_MORE_DATA) {
-      throwException(env, status);
+      THROW_EXCEPTION(env, status);
       return false;
     }
     std::unique_ptr<char[]> paths(new char[bufferSize + 2]);
     status = ::PdhExpandWildCardPath(_query->hasDataSource() ? _query->getDataSource().c_str() : nullptr, _pidPath.c_str(), paths.get(), &bufferSize, 0);
     if (status != ERROR_SUCCESS) {
-      throwException(env, status);
+      THROW_EXCEPTION(env, status);
       return false;
     }
     ::PDH_HQUERY query;
     status = ::PdhOpenQuery(_query->hasDataSource() ? _query->getDataSource().c_str() : nullptr, 0, &query);
     if (status != ERROR_SUCCESS) {
-      throwException(env, status);
+      THROW_EXCEPTION(env, status);
       return false;
     }
     AutoCloseableQuery autoCloseableQuery(env, query);
@@ -239,14 +239,14 @@ namespace jpdh {
       ::PDH_HCOUNTER counterHandle;
       status = ::PdhAddCounter(query, paths.get() + offset, 0, &counterHandle);
       if (status != ERROR_SUCCESS) {
-        throwException(env, status);
+        THROW_EXCEPTION(env, status);
         return false;
       }
       counters.emplace_back(CounterInfo{offset, counterHandle});
     }
     status = ::PdhCollectQueryData(query);
     if (status != ERROR_SUCCESS) {
-      throwException(env, status);
+      THROW_EXCEPTION(env, status);
       return false;
     }
     std::vector<CounterInfo>::const_iterator counterIt = counters.begin();
@@ -257,16 +257,16 @@ namespace jpdh {
       ::PDH_FMT_COUNTERVALUE value;
       status = ::PdhGetFormattedCounterValue(counterIt->handle, PDH_FMT_LONG, &type, &value);
       if (status != ERROR_SUCCESS) {
-        throwException(env, status);
+        THROW_EXCEPTION(env, status);
         return false;
       } else if (value.CStatus != PDH_CSTATUS_VALID_DATA && value.CStatus != PDH_CSTATUS_NEW_DATA) {
-        throwException(env, value.CStatus);
+        THROW_EXCEPTION(env, value.CStatus);
         return false;
       }
       if (value.longValue == _pid) {
         status = ::PdhAddCounter(_query->getHandle(), paths.get() + offset, 0, &_pidHandle);
         if (status != ERROR_SUCCESS) {
-          throwException(env, status);
+          THROW_EXCEPTION(env, status);
           return false;
         }
         if (!_processParser.parse(paths.get() + offset)) {
@@ -282,7 +282,7 @@ namespace jpdh {
         fullPath << _prefix << "Process(" << _processParser.getProcess() << ")" << _suffix;
         status = ::PdhAddEnglishCounter(_query->getHandle(), fullPath.str().c_str(), 0, &_handle);
         if (status != ERROR_SUCCESS) {
-          throwException(env, status);
+          THROW_EXCEPTION(env, status);
           return false;
         }
         _valid = true;
