@@ -234,24 +234,19 @@ namespace jpdh {
          offset += std::strlen(paths.get() + offset) + 1) {
       ::PDH_HCOUNTER counterHandle;
       status = ::PdhAddCounter(query, paths.get() + offset, 0, &counterHandle);
-      if (status != ERROR_SUCCESS) {
-        THROW_EXCEPTION(env, status);
-        return false;
+      if (status == ERROR_SUCCESS) {
+        counters.emplace_back(CounterInfo{offset, counterHandle});
       }
-      counters.emplace_back(CounterInfo{offset, counterHandle});
     }
     status = ::PdhCollectQueryData(query);
     if (status != ERROR_SUCCESS) {
       THROW_EXCEPTION(env, status);
       return false;
     }
-    std::vector<CounterInfo>::const_iterator counterIt = counters.begin();
-    for (int offset = 0;
-         paths[offset];
-         offset += std::strlen(paths.get() + offset) + 1) {
+    for (const auto& counter: counters) {
       DWORD type;
       ::PDH_FMT_COUNTERVALUE value;
-      status = ::PdhGetFormattedCounterValue(counterIt->handle, PDH_FMT_LONG, &type, &value);
+      status = ::PdhGetFormattedCounterValue(counter.handle, PDH_FMT_LONG, &type, &value);
       if (status != ERROR_SUCCESS) {
         THROW_EXCEPTION(env, status);
         return false;
@@ -260,12 +255,12 @@ namespace jpdh {
         return false;
       }
       if (value.longValue == _pid) {
-        status = ::PdhAddCounter(_query->getHandle(), paths.get() + offset, 0, &_pidHandle);
+        status = ::PdhAddCounter(_query->getHandle(), paths.get() + counter.offset, 0, &_pidHandle);
         if (status != ERROR_SUCCESS) {
           THROW_EXCEPTION(env, status);
           return false;
         }
-        if (!_processParser.parse(paths.get() + offset)) {
+        if (!_processParser.parse(paths.get() + counter.offset)) {
           std::stringstream ss;
           ss << "Unable to get process name for PID " << _pid;
           if (_processParser.error()) {
@@ -284,7 +279,6 @@ namespace jpdh {
         _valid = true;
         return true;
       }
-      ++counterIt;
     }
     _valid = true;
     return false;
