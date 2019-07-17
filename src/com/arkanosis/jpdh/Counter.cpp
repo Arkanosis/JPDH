@@ -155,15 +155,14 @@ namespace jpdh {
       DWORD type;
       ::PDH_FMT_COUNTERVALUE currentPid;
       ::PDH_STATUS status = ::PdhGetFormattedCounterValue(_pidHandle, PDH_FMT_LONG, &type, &currentPid);
-      if (status != ERROR_SUCCESS) {
-        THROW_EXCEPTION(env, status);
-        return false;
-      } else if (currentPid.CStatus != PDH_CSTATUS_VALID_DATA && currentPid.CStatus != PDH_CSTATUS_NEW_DATA) {
-        THROW_EXCEPTION(env, currentPid.CStatus);
-        return false;
-      }
-      if (currentPid.longValue == _pid) {
-        break;
+      if (status == ERROR_SUCCESS) {
+        if (currentPid.CStatus != PDH_CSTATUS_VALID_DATA && currentPid.CStatus != PDH_CSTATUS_NEW_DATA) {
+          THROW_EXCEPTION(env, currentPid.CStatus);
+          return false;
+        }
+        if (currentPid.longValue == _pid) {
+          break;
+        }
       }
       status = ::PdhRemoveCounter(_pidHandle);
       if (status != ERROR_SUCCESS) {
@@ -281,7 +280,7 @@ namespace jpdh {
           _valid = true;
           return true;
         }
-      }
+      } // TODO  else { ::PdhRemoveCounter(counter.handle) and remove counter from counters }
     }
     _valid = true;
     return false;
