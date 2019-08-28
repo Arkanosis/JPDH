@@ -214,8 +214,11 @@ namespace jpdh {
       THROW_EXCEPTION(env, status);
       return false;
     }
-    std::unique_ptr<char[]> paths(new char[bufferSize + 2]);
-    status = ::PdhExpandWildCardPath(_query->hasDataSource() ? _query->getDataSource().c_str() : nullptr, _pidPath.c_str(), paths.get(), &bufferSize, 0);
+    std::unique_ptr<char[]> paths;
+    do {
+      paths = std::unique_ptr<char[]>(new char[bufferSize + 2]);
+      status = ::PdhExpandWildCardPath(_query->hasDataSource() ? _query->getDataSource().c_str() : nullptr, _pidPath.c_str(), paths.get(), &bufferSize, 0);
+    } while (status == PDH_MORE_DATA);
     if (status != ERROR_SUCCESS) {
       THROW_EXCEPTION(env, status);
       return false;
