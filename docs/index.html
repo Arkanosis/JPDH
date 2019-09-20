@@ -69,8 +69,8 @@
             <h2 class="title">J<span class="highlight">PDH</span></h2>
             <p class="intro">Windows Performance Data Helper for Java</p>
             <div class="btns">
-                <a class="btn btn-cta-primary" href="https://github.com/Arkanosis/JPDH/releases/download/v1.1.3/jpdh.jar">Download v1.1.3</a>
-                <a class="btn btn-cta-secondary" href="https://github.com/Arkanosis/JPDH/releases/download/v1.1.3/jpdh.jar.asc">PGP signature</a>
+                <a class="btn btn-cta-primary" href="https://github.com/Arkanosis/JPDH/releases/download/v1.1.4/jpdh.jar">Download v1.1.4</a>
+                <a class="btn btn-cta-secondary" href="https://github.com/Arkanosis/JPDH/releases/download/v1.1.4/jpdh.jar.asc">PGP signature</a>
             </div>
             <ul class="meta list-inline">
                 <li><a href="https://github.com/arkanosis/JPDH">View on GitHub</a></li>
@@ -117,14 +117,14 @@
 &lt;dependency>
   &lt;groupId>com.arkanosis&lt;/groupId>
   &lt;artifactId>jpdh&lt;/artifactId>
-  &lt;version>1.1.3&lt;/version>
+  &lt;version>1.1.4&lt;/version>
 &lt;/dependency>
                     </code></pre>
                 </div><!--//code-block-->
                 <p>With Gradle:</p>
                 <div class="code-block">
                     <pre><code class="language-kotlin">
-compile("com.arkanosis:jpdh:1.1.3")
+compile("com.arkanosis:jpdh:1.1.4")
                     </code></pre>
                 </div><!--//code-block-->
             </div><!--//block-->
@@ -139,6 +139,7 @@ compile("com.arkanosis:jpdh:1.1.3")
             <h2 class="title text-center">Versions history</h2>
                 <div class="info">
                     <ul>
+                        <li>2019-09-20: version 1.1.4 — Bugfix release. Counters based on the virtual “PID” object sometimes couldn't be initialized while lots of processes were started of stopped.</li>
                         <li>2017-09-14: version 1.1.3 — Bugfix release. The virtual “PID” object didn't work on localized (eg. German) versions of Windows.</li>
                         <li>2016-06-08: version 1.1.2 — Bugfix release. Calling Query.removeCounter(counter) on counters associated with dead processes was throwing an exception.</li>
                         <li>2016-06-01: version 1.1.1 — Bugfix release. Calling Query.removeCounter(counter) on counters associated with dead processes was throwing an exception.</li>

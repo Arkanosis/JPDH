@@ -15,14 +15,14 @@ Add jpdh.jar to your CLASSPATH.
 <dependency>
   <groupId>com.arkanosis</groupId>
   <artifactId>jpdh</artifactId>
-  <version>1.1.3</version>
+  <version>1.1.4</version>
 </dependency>
 ```
 
 ### With Gradle
 
 ```kotlin
-compile("com.arkanosis:jpdh:1.1.3")
+compile("com.arkanosis:jpdh:1.1.4")
 ```
 
 ## Usage
@@ -60,6 +60,7 @@ Additionally, you may run the test suite using `make runtest`.
 
 ## History
 
+* 2019-09-20: version 1.1.4 — Bugfix release. Counters based on the virtual “PID” object sometimes couldn't be initialized while lots of processes were started of stopped.
 * 2017-09-14: version 1.1.3 — Bugfix release. The virtual “PID” object didn't work on localized (eg. German) versions of Windows.
 * 2016-06-08: version 1.1.2 — Bugfix release. Calling Query.removeCounter(counter) on counters associated with dead processes was throwing an exception.
 * 2016-06-01: version 1.1.1 — Bugfix release. Calling Query.removeCounter(counter) on counters associated with dead processes was throwing an exception.

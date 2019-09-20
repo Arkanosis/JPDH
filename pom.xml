@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.arkanosis</groupId>
   <artifactId>jpdh</artifactId>
-  <version>1.1.3</version>
+  <version>1.1.4</version>
   <name>JPDH</name>
   <description>Windows Performance Data Helper for Java</description>
   <url>https://jpdh.arkanosis.com/</url>
